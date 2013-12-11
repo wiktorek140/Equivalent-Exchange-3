@@ -1,5 +1,6 @@
-build.properties
-.DS_Store
-.DS_Store?
-.Spotlight-V100
-.Trashes
+/bin
+.classpath
+.project
+private.properties
+environment.properties
+/eclipse
