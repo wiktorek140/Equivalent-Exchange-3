@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL11;
  * TileEntityCalcinatorRenderer
  *
  * @author pahimar
- * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
  */
 @SideOnly(Side.CLIENT)
 public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
@@ -47,7 +46,7 @@ public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
             // Render
             modelCalcinator.renderPart("Calcinator");
 
-            if (tileCalcinator.getStackInSlot(TileCalcinator.OUTPUT_INVENTORY_INDEX) != null)
+            if (tileCalcinator.getStackInSlot(TileCalcinator.OUTPUT_LEFT_INVENTORY_INDEX) != null || tileCalcinator.getStackInSlot(TileCalcinator.OUTPUT_RIGHT_INVENTORY_INDEX) != null)
             {
                 modelCalcinator.renderPart("Dust");
             }

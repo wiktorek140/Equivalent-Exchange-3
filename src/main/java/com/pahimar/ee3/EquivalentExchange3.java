@@ -5,7 +5,6 @@ import com.pahimar.ee3.block.ModBlocks;
 import com.pahimar.ee3.command.CommandHandler;
 import com.pahimar.ee3.configuration.ConfigurationHandler;
 import com.pahimar.ee3.creativetab.CreativeTabEE3;
-import com.pahimar.ee3.emc.EmcRegistry;
 import com.pahimar.ee3.handler.*;
 import com.pahimar.ee3.helper.FluidHelper;
 import com.pahimar.ee3.helper.LogHelper;
@@ -40,7 +39,6 @@ import java.io.File;
  * EquivalentExchange3
  *
  * @author pahimar
- * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
  */
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, dependencies = Reference.DEPENDENCIES, certificateFingerprint = Reference.FINGERPRINT)
 @NetworkMod(channels = {Reference.CHANNEL_NAME}, clientSideRequired = true, serverSideRequired = false, packetHandler = PacketHandler.class)
@@ -163,7 +161,6 @@ public class EquivalentExchange3
     public void postInit(FMLPostInitializationEvent event)
     {
         // NOOP
-        EmcRegistry.lazyInit();
     }
 
     @EventHandler

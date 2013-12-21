@@ -13,23 +13,20 @@ import net.minecraft.item.ItemStack;
  * ModItems
  *
  * @author pahimar
- * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
  */
 public class ModItems
 {
-
     // Mod item instances
-    public static Item miniumShard;
-    public static Item inertStone;
-    public static Item miniumStone;
-    public static Item philStone;
-    public static Item alchemicalDust;
-    public static Item alchemicalBag;
-    public static Item alchemicalChalk;
+    public static ItemEE miniumShard;
+    public static ItemEE inertStone;
+    public static ItemEE miniumStone;
+    public static ItemEE philStone;
+    public static ItemEE alchemicalDust;
+    public static ItemEE alchemicalBag;
+    public static ItemEE alchemicalChalk;
 
     public static void init()
     {
-
         // Initialize each mod item individually
         miniumShard = new ItemMiniumShard(ItemIds.MINIUM_SHARD);
         inertStone = new ItemInertStone(ItemIds.INERT_STONE);
@@ -53,8 +50,8 @@ public class ModItems
         GameRegistry.registerItem(alchemicalChalk, Strings.ALCHEMICAL_CHALK_NAME);
 
         // Add recipes for items
-        GameRegistry.addRecipe(new ItemStack(inertStone), new Object[] {"sis", "igi", "sis", 's', Block.stone, 'i', Item.ingotIron, 'g', Item.ingotGold});
-        GameRegistry.addRecipe(new ItemStack(miniumStone), new Object[] {"sss", "sis", "sss", 's', miniumShard, 'i', inertStone});
+        GameRegistry.addRecipe(new ItemStack(inertStone), new Object[]{"sis", "igi", "sis", 's', Block.stone, 'i', Item.ingotIron, 'g', Item.ingotGold});
+        GameRegistry.addRecipe(new ItemStack(miniumStone), new Object[]{"sss", "sis", "sss", 's', miniumShard, 'i', inertStone});
         GameRegistry.addShapelessRecipe(new ItemStack(alchemicalChalk), new ItemStack(Item.clay), new ItemStack(Item.dyePowder.itemID, 1, 15), new ItemStack(Item.dyePowder.itemID, 1, 15), new ItemStack(Item.dyePowder.itemID, 1, 15), new ItemStack(Item.dyePowder.itemID, 1, 15));
     }
 }

@@ -22,20 +22,16 @@ import java.util.Random;
  * BlockCalcinator
  *
  * @author pahimar
- * @license Lesser GNU Public License v3 (http://www.gnu.org/licenses/lgpl.html)
  */
 public class BlockCalcinator extends BlockEE
 {
-
     /**
-     * Is the random generator used by calcinator to drop the inventory contents
-     * in random directions.
+     * Is the random generator used by calcinator to drop the inventory contents in random directions.
      */
     private Random rand = new Random();
 
     public BlockCalcinator(int id)
     {
-
         super(id, Material.rock);
         this.setUnlocalizedName(Strings.CALCINATOR_NAME);
         this.setCreativeTab(EquivalentExchange3.tabsEE3);
@@ -52,21 +48,18 @@ public class BlockCalcinator extends BlockEE
     @Override
     public TileEntity createNewTileEntity(World world)
     {
-
         return new TileCalcinator();
     }
 
     @Override
     public boolean renderAsNormalBlock()
     {
-
         return false;
     }
 
     @Override
     public boolean isOpaqueCube()
     {
-
         return false;
     }
 
@@ -80,7 +73,6 @@ public class BlockCalcinator extends BlockEE
     @Override
     public void breakBlock(World world, int x, int y, int z, int id, int meta)
     {
-
         dropInventory(world, x, y, z);
         super.breakBlock(world, x, y, z, id, meta);
     }
@@ -88,7 +80,6 @@ public class BlockCalcinator extends BlockEE
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9)
     {
-
         if (player.isSneaking())
         {
             return false;
@@ -111,7 +102,6 @@ public class BlockCalcinator extends BlockEE
 
     private void dropInventory(World world, int x, int y, int z)
     {
-
         TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
 
         if (!(tileEntity instanceof IInventory))
