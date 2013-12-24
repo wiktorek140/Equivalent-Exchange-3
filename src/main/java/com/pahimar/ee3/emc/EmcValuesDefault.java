@@ -60,7 +60,7 @@ public class EmcValuesDefault
         valueMap.put(new WrappedStack(new OreStack(new ItemStack(Block.sapling))), new EmcValue(32, Arrays.asList(new EmcComponent(EmcType.CORPOREAL, 4), new EmcComponent(EmcType.ESSENTIA, 1))));
 
         // Fluids
-        valueMap.put(new WrappedStack(FluidRegistry.WATER), new EmcValue(0.1f, Arrays.asList(new EmcComponent(EmcType.CORPOREAL, 1), new EmcComponent(EmcType.AMORPHOUS, 1))));
+        valueMap.put(new WrappedStack(FluidRegistry.WATER), new EmcValue(1f, Arrays.asList(new EmcComponent(EmcType.CORPOREAL, 1), new EmcComponent(EmcType.AMORPHOUS, 1))));
         valueMap.put(new WrappedStack(FluidRegistry.LAVA), new EmcValue(64, Arrays.asList(new EmcComponent(EmcType.CORPOREAL, 4), new EmcComponent(EmcType.AMORPHOUS, 1))));
         valueMap.put(new WrappedStack(FluidRegistry.getFluid("milk")), new EmcValue(64, Arrays.asList(new EmcComponent(EmcType.CORPOREAL, 3), new EmcComponent(EmcType.AMORPHOUS, 1))));
 
@@ -184,7 +184,7 @@ public class EmcValuesDefault
         valueMap.put(new WrappedStack(Item.netherQuartz), new EmcValue(256));
         
         /* Equivalent Exchange 3 */
-        valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 0)), new EmcValue(0.001f));
+        valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 0)), new EmcValue(1));
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 1)), new EmcValue(256));
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 2)), new EmcValue(2048));
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 3)), new EmcValue(8192));

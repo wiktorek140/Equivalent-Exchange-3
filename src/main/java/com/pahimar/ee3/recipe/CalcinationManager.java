@@ -3,12 +3,10 @@ package com.pahimar.ee3.recipe;
 import com.pahimar.ee3.emc.EmcRegistry;
 import com.pahimar.ee3.emc.EmcValue;
 import com.pahimar.ee3.helper.ItemHelper;
-import com.pahimar.ee3.helper.LogHelper;
 import com.pahimar.ee3.item.ModItems;
 import net.minecraft.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Equivalent-Exchange-3
@@ -19,21 +17,51 @@ import java.util.List;
  */
 public class CalcinationManager
 {
-    public static List<ItemStack> getCalcinationResult(ItemStack itemStack)
+    // TODO Random chance to get an extra item in the stack
+    public static ItemStack getCalcinationResult(ItemStack calcinedStack)
     {
-        List<ItemStack> calcinationResults = new ArrayList<ItemStack>();
+        ItemStack itemStack = calcinedStack.copy();
+        itemStack.stackSize = 1;
 
-        EmcValue emcValue = EmcRegistry.getEmcValue(itemStack);
+        TreeMap<EmcValue, ItemStack> sortedItems = new TreeMap<EmcValue, ItemStack>();
 
-        if (emcValue != null)
+        for (ItemStack dustStack : ModItems.alchemicalDust.getSubTypes())
         {
-            // TODO Get EmcValue of itemStack, add it list of EmcValues of the different dusts, sort it, determine position, and determine result from that
-            for (ItemStack alchemicalDustStack : ModItems.alchemicalDust.getSubTypes())
+            // If the item to be calcined is an alchemical dust, return null (you cannot calcine what's already been calcined)
+            if (ItemHelper.equals(itemStack, dustStack))
             {
-                LogHelper.debug(ItemHelper.toString(alchemicalDustStack));
+                return null;
+            }
+
+            if (EmcRegistry.getInstance().hasEmcValue(dustStack))
+            {
+                sortedItems.put(EmcRegistry.getInstance().getEmcValue(dustStack), dustStack);
             }
         }
 
-        return calcinationResults;
+        if (EmcRegistry.getInstance().hasEmcValue(itemStack))
+        {
+            if (sortedItems.containsKey(EmcRegistry.getInstance().getEmcValue(itemStack)))
+            {
+                return sortedItems.get(EmcRegistry.getInstance().getEmcValue(itemStack));
+            }
+            else
+            {
+                sortedItems.put(EmcRegistry.getInstance().getEmcValue(itemStack), itemStack);
+
+                if (sortedItems.lowerEntry(EmcRegistry.getInstance().getEmcValue(itemStack)) == null)
+                {
+                    return new ItemStack(ModItems.alchemicalDust, 1, 0);
+                }
+                else
+                {
+                    return sortedItems.lowerEntry(EmcRegistry.getInstance().getEmcValue(itemStack)).getValue();
+                }
+            }
+        }
+        else
+        {
+            return new ItemStack(ModItems.alchemicalDust, 1, 0);
+        }
     }
 }

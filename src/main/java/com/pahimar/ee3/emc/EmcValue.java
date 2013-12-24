@@ -5,7 +5,9 @@ import com.pahimar.ee3.helper.LogHelper;
 import com.pahimar.ee3.lib.Compare;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
 {
     // Gson serializer for serializing to/deserializing from json
     private static final Gson gsonSerializer = (new GsonBuilder()).registerTypeAdapter(EmcValue.class, new EmcValue()).create();
+    private static final int PRECISION = 4;
 
     public final float[] components;
 
@@ -50,24 +53,34 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
 
     public EmcValue(float value, EmcType emcType)
     {
-        this.components = new float[EmcType.TYPES.length];
-        this.components[emcType.ordinal()] = value;
+        this(value, Arrays.asList(new EmcComponent(emcType)));
     }
 
     public EmcValue(float[] components)
     {
-        this.components = components;
+        if (components.length == EmcType.TYPES.length)
+        {
+//            this.components = components;
+            this.components = new float[components.length];
+            for (int i = 0; i < this.components.length; i++)
+            {
+                BigDecimal bigComponent = BigDecimal.valueOf(components[i]).setScale(PRECISION, BigDecimal.ROUND_HALF_DOWN);
+                this.components[i] = bigComponent.floatValue();
+            }
+        }
+        else
+        {
+            this.components = null;
+        }
     }
 
     public EmcValue(int value, List<EmcComponent> componentList)
     {
-
         this((float) value, componentList);
     }
 
     public EmcValue(float value, List<EmcComponent> componentList)
     {
-
         this.components = new float[EmcType.TYPES.length];
 
         List<EmcComponent> collatedComponents = collateComponents(componentList);
@@ -96,11 +109,16 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
         {
             this.components[EmcType.DEFAULT.ordinal()] = value;
         }
+
+        for (int i = 0; i < this.components.length; i++)
+        {
+            BigDecimal bigComponent = BigDecimal.valueOf(this.components[i]).setScale(PRECISION, BigDecimal.ROUND_HALF_DOWN);
+            this.components[i] = bigComponent.floatValue();
+        }
     }
 
     public float getValue()
     {
-
         float sumSubValues = 0;
 
         for (float subValue : this.components)
@@ -125,9 +143,7 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
     {
         StringBuilder stringBuilder = new StringBuilder();
 
-        // TODO Intelligible output
         stringBuilder.append("[");
-
         for (EmcType emcType : EmcType.TYPES)
         {
             if (components[emcType.ordinal()] > 0)
@@ -135,7 +151,6 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
                 stringBuilder.append(String.format(" %s:%s ", emcType, components[emcType.ordinal()]));
             }
         }
-
         stringBuilder.append("]");
 
         return stringBuilder.toString();
@@ -144,7 +159,6 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
     @Override
     public int hashCode()
     {
-
         int hashCode = 1;
 
         hashCode = 37 * hashCode + Float.floatToIntBits(getValue());
@@ -245,13 +259,13 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
 
             for (EmcType emcType : EmcType.TYPES)
             {
-                if (Float.compare(first[emcType.ordinal()], second[emcType.ordinal()]) != 0)
+                if (Float.compare(first[emcType.ordinal()], second[emcType.ordinal()]) != Compare.EQUALS)
                 {
                     return Float.compare(first[emcType.ordinal()], second[emcType.ordinal()]);
                 }
             }
 
-            return 0;
+            return Compare.EQUALS;
         }
         else
         {
@@ -289,8 +303,7 @@ public class EmcValue implements Comparable<EmcValue>, JsonDeserializer<EmcValue
                 }
                 catch (UnsupportedOperationException exception)
                 {
-                    // TODO Better logging/handling of the exception
-                    exception.printStackTrace(System.err);
+                    LogHelper.severe(exception.getMessage());
                 }
             }
         }

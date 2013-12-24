@@ -24,9 +24,9 @@ import java.util.List;
  */
 public class ItemAlchemicalDust extends ItemEE
 {
-    public static final String[] ALCHEMICAL_DUST_NAMES = {"Ash", "Minium", "Verdant", "Azure", "Amaranthine", "Iridescent"};
+    public static final String[] ALCHEMICAL_DUST_NAMES = {"Ash", "Verdant", "Azure", "Minium", "Amaranthine", "Iridescent"};
     public static final EmcValue[] DEFAULT_EMC_VALUES = {
-            new EmcValue(0.1f),
+            new EmcValue(1),
             new EmcValue(256),
             new EmcValue(2048),
             new EmcValue(8192),
@@ -91,19 +91,19 @@ public class ItemAlchemicalDust extends ItemEE
             }
             case 1:
             {
-                return EnumChatFormatting.WHITE + super.getItemDisplayName(itemStack);
+                return EnumChatFormatting.GREEN + super.getItemDisplayName(itemStack);
             }
             case 2:
             {
-                return EnumChatFormatting.GREEN + super.getItemDisplayName(itemStack);
+                return EnumChatFormatting.BLUE + super.getItemDisplayName(itemStack);
             }
             case 3:
             {
-                return EnumChatFormatting.BLUE + super.getItemDisplayName(itemStack);
+                return EnumChatFormatting.RED + super.getItemDisplayName(itemStack);
             }
             case 4:
             {
-                return EnumChatFormatting.DARK_PURPLE + super.getItemDisplayName(itemStack);
+                return EnumChatFormatting.LIGHT_PURPLE + super.getItemDisplayName(itemStack);
             }
             case 5:
             {
