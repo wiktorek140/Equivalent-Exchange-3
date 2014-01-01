@@ -21,25 +21,25 @@ import java.text.DecimalFormat;
 @SideOnly(Side.CLIENT)
 public class ItemTooltipEventHandler
 {
-    private static boolean debug = true;
+    private static boolean debug = false;
     private static DecimalFormat emcDecimalFormat = new DecimalFormat("#.###");
 
     @ForgeSubscribe
     public void handleItemTooltipEvent(ItemTooltipEvent event)
     {
-        WrappedStack stack = new WrappedStack(event.itemStack);
-
-        if (EmcRegistry.getInstance().hasEmcValue(stack))
+        if (debug)
         {
-            EmcValue emcValue = EmcRegistry.getInstance().getEmcValue(stack);
+            WrappedStack stack = new WrappedStack(event.itemStack);
 
-            event.toolTip.add("");
-            if (emcValue != null)
+            if (EmcRegistry.getInstance().hasEmcValue(stack))
             {
-                event.toolTip.add("EMC: " + String.format("%s", emcDecimalFormat.format(stack.getStackSize() * emcValue.getValue())));
+                EmcValue emcValue = EmcRegistry.getInstance().getEmcValue(stack);
 
-                if (debug)
+                event.toolTip.add("");
+                if (emcValue != null)
                 {
+                    event.toolTip.add("EMC: " + String.format("%s", emcDecimalFormat.format(stack.getStackSize() * emcValue.getValue())));
+
                     for (EmcType emcType : EmcType.TYPES)
                     {
                         if (emcValue.components[emcType.ordinal()] > 0)

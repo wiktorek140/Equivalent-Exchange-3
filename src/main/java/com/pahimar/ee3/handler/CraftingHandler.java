@@ -2,11 +2,15 @@ package com.pahimar.ee3.handler;
 
 import com.pahimar.ee3.configuration.ConfigurationSettings;
 import com.pahimar.ee3.helper.ItemStackNBTHelper;
+import com.pahimar.ee3.item.crafting.RecipesAlchemicalBagDyes;
+import com.pahimar.ee3.item.crafting.RecipesEquivalentExchange;
 import com.pahimar.ee3.lib.Strings;
 import cpw.mods.fml.common.ICraftingHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 
 /**
  * Equivalent-Exchange-3
@@ -17,6 +21,17 @@ import net.minecraft.item.ItemStack;
  */
 public class CraftingHandler implements ICraftingHandler
 {
+    public static void init()
+    {
+        // Register the Crafting Handler
+        GameRegistry.registerCraftingHandler(new CraftingHandler());
+
+        // Add in the ability to dye Alchemical Bags
+        CraftingManager.getInstance().getRecipeList().add(new RecipesAlchemicalBagDyes());
+
+        // Register our recipes
+        RecipesEquivalentExchange.init();
+    }
 
     @Override
     public void onCrafting(EntityPlayer player, ItemStack item, IInventory craftMatrix)
