@@ -9,12 +9,6 @@ package com.pahimar.ee3.lib;
  */
 public class Strings
 {
-
-    /* General keys */
-    public static final String TRUE = "true";
-    public static final String FALSE = "false";
-    public static final String TOKEN_DELIMITER = ",";
-
     /* Localization Prefixes */
     public static final String RESOURCE_PREFIX = Reference.MOD_ID.toLowerCase() + ":";
 
@@ -49,6 +43,7 @@ public class Strings
     public static final String ALCHEMICAL_CHEST_NAME = "alchemicalChest";
     public static final String GLASS_BELL_NAME = "glassBell";
     public static final String ALCHEMY_SQUARE_NAME = "alchemySquare";
+    public static final String RESEARCH_STATION_NAME = "researchStation";
 
     /* Item name constants */
     public static final String MINIUM_SHARD_NAME = "shardMinium";
@@ -66,12 +61,6 @@ public class Strings
     public static final String[] ALCHEMICAL_FUEL_SUBTYPE_NAMES = {ALCHEMICAL_COAL_NAME, MOBIUS_FUEL_NAME, AETERNALIS_FUEL_NAME};
     public static final String ALCHEMICAL_FUEL_NAME = "alchemicalFuel";
     public static final String ALCHEMICAL_FUEL_BLOCK_NAME = "alchemicalFuelBlock";
-
-    /* TileEntity name constants */
-    public static final String TE_CALCINATOR_NAME = "tileCalcinator";
-    public static final String TE_ALUDEL_NAME = "tileAludel";
-    public static final String TE_ALCHEMICAL_CHEST_NAME = "tileAlchemicalChest";
-    public static final String TE_GLASS_BELL_NAME = "tileGlassBell";
 
     /* Transmutation cost related constants */
     public static final String TRANSMUTATION_COST = "_cost";
