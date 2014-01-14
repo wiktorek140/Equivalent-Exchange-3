@@ -16,28 +16,68 @@ import net.minecraft.item.ItemStack;
  */
 public class ContainerAlchemicalChest extends Container
 {
-
     private TileAlchemicalChest tileAlchemicalChest;
 
-    private final int CHEST_INVENTORY_ROWS = 4;
-    private final int CHEST_INVENTORY_COLUMNS = 13;
+    private int chestInventoryRows;
+    private int chestInventoryColumns;
 
+    // Small Chest
+    public static final int SMALL_CHEST_INVENTORY_ROWS = 4;
+    public static final int SMALL_CHEST_INVENTORY_COLUMNS = 12;
+    public static final int SMALL_INVENTORY_SIZE = SMALL_CHEST_INVENTORY_ROWS * SMALL_CHEST_INVENTORY_COLUMNS;
+
+    // Medium Chest
+    public static final int MEDIUM_CHEST_INVENTORY_ROWS = 7;
+    public static final int MEDIUM_CHEST_INVENTORY_COLUMNS = 12;
+    public static final int MEDIUM_INVENTORY_SIZE = MEDIUM_CHEST_INVENTORY_ROWS * MEDIUM_CHEST_INVENTORY_COLUMNS;
+
+    // Large Chest
+    public static final int LARGE_CHEST_INVENTORY_ROWS = 9;
+    public static final int LARGE_CHEST_INVENTORY_COLUMNS = 13;
+    public static final int LARGE_INVENTORY_SIZE = LARGE_CHEST_INVENTORY_ROWS * LARGE_CHEST_INVENTORY_COLUMNS;
+
+    // Player Inventory
     private final int PLAYER_INVENTORY_ROWS = 3;
     private final int PLAYER_INVENTORY_COLUMNS = 9;
 
     public ContainerAlchemicalChest(InventoryPlayer inventoryPlayer, TileAlchemicalChest tileAlchemicalChest)
     {
-
         this.tileAlchemicalChest = tileAlchemicalChest;
-
         tileAlchemicalChest.openChest();
 
-        // Add the Alchemical Chest slots to the container
-        for (int chestRowIndex = 0; chestRowIndex < CHEST_INVENTORY_ROWS; ++chestRowIndex)
+        if (this.tileAlchemicalChest.getState() == 0)
         {
-            for (int chestColumnIndex = 0; chestColumnIndex < CHEST_INVENTORY_COLUMNS; ++chestColumnIndex)
+            chestInventoryRows = SMALL_CHEST_INVENTORY_ROWS;
+            chestInventoryColumns = SMALL_CHEST_INVENTORY_COLUMNS;
+        }
+        else if (this.tileAlchemicalChest.getState() == 1)
+        {
+            chestInventoryRows = MEDIUM_CHEST_INVENTORY_ROWS;
+            chestInventoryColumns = MEDIUM_CHEST_INVENTORY_COLUMNS;
+        }
+        else if (this.tileAlchemicalChest.getState() == 2)
+        {
+            chestInventoryRows = LARGE_CHEST_INVENTORY_ROWS;
+            chestInventoryColumns = LARGE_CHEST_INVENTORY_COLUMNS;
+        }
+
+        // Add the Alchemical Chest slots to the container
+        for (int chestRowIndex = 0; chestRowIndex < chestInventoryRows; ++chestRowIndex)
+        {
+            for (int chestColumnIndex = 0; chestColumnIndex < chestInventoryColumns; ++chestColumnIndex)
             {
-                this.addSlotToContainer(new Slot(tileAlchemicalChest, chestColumnIndex + chestRowIndex * 13, 8 + chestColumnIndex * 18, 18 + chestRowIndex * 18));
+                if (this.tileAlchemicalChest.getState() == 0)
+                {
+                    this.addSlotToContainer(new Slot(tileAlchemicalChest, chestColumnIndex + chestRowIndex * chestInventoryColumns, 8 + chestColumnIndex * 18, 18 + chestRowIndex * 18));
+                }
+                else if (this.tileAlchemicalChest.getState() == 1)
+                {
+                    this.addSlotToContainer(new Slot(tileAlchemicalChest, chestColumnIndex + chestRowIndex * chestInventoryColumns, 8 + chestColumnIndex * 18, 18 + chestRowIndex * 18));
+                }
+                else if (this.tileAlchemicalChest.getState() == 2)
+                {
+                    this.addSlotToContainer(new Slot(tileAlchemicalChest, chestColumnIndex + chestRowIndex * chestInventoryColumns, 8 + chestColumnIndex * 18, 8 + chestRowIndex * 18));
+                }
             }
         }
 
@@ -46,21 +86,42 @@ public class ContainerAlchemicalChest extends Container
         {
             for (int inventoryColumnIndex = 0; inventoryColumnIndex < PLAYER_INVENTORY_COLUMNS; ++inventoryColumnIndex)
             {
-                this.addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 44 + inventoryColumnIndex * 18, 104 + inventoryRowIndex * 18));
+                if (this.tileAlchemicalChest.getState() == 0)
+                {
+                    this.addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 35 + inventoryColumnIndex * 18, 104 + inventoryRowIndex * 18));
+                }
+                else if (this.tileAlchemicalChest.getState() == 1)
+                {
+                    this.addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 35 + inventoryColumnIndex * 18, 158 + inventoryRowIndex * 18));
+                }
+                else if (this.tileAlchemicalChest.getState() == 2)
+                {
+                    this.addSlotToContainer(new Slot(inventoryPlayer, inventoryColumnIndex + inventoryRowIndex * 9 + 9, 44 + inventoryColumnIndex * 18, 174 + inventoryRowIndex * 18));
+                }
             }
         }
 
         // Add the player's action bar slots to the container
         for (int actionBarSlotIndex = 0; actionBarSlotIndex < PLAYER_INVENTORY_COLUMNS; ++actionBarSlotIndex)
         {
-            this.addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 44 + actionBarSlotIndex * 18, 162));
+            if (this.tileAlchemicalChest.getState() == 0)
+            {
+                this.addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 35 + actionBarSlotIndex * 18, 162));
+            }
+            else if (this.tileAlchemicalChest.getState() == 1)
+            {
+                this.addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 35 + actionBarSlotIndex * 18, 216));
+            }
+            else if (this.tileAlchemicalChest.getState() == 2)
+            {
+                this.addSlotToContainer(new Slot(inventoryPlayer, actionBarSlotIndex, 44 + actionBarSlotIndex * 18, 232));
+            }
         }
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer var1)
     {
-
         return true;
     }
 
@@ -70,7 +131,6 @@ public class ContainerAlchemicalChest extends Container
     @Override
     public void onContainerClosed(EntityPlayer entityPlayer)
     {
-
         super.onContainerClosed(entityPlayer);
         tileAlchemicalChest.closeChest();
     }
@@ -78,7 +138,6 @@ public class ContainerAlchemicalChest extends Container
     @Override
     public ItemStack transferStackInSlot(EntityPlayer entityPlayer, int slotIndex)
     {
-
         ItemStack newItemStack = null;
         Slot slot = (Slot) inventorySlots.get(slotIndex);
 
@@ -87,21 +146,21 @@ public class ContainerAlchemicalChest extends Container
             ItemStack itemStack = slot.getStack();
             newItemStack = itemStack.copy();
 
-            if (slotIndex < CHEST_INVENTORY_ROWS * CHEST_INVENTORY_COLUMNS)
+            if (slotIndex < chestInventoryRows * chestInventoryColumns)
             {
-                if (!this.mergeItemStack(itemStack, CHEST_INVENTORY_ROWS * CHEST_INVENTORY_COLUMNS, inventorySlots.size(), false))
+                if (!this.mergeItemStack(itemStack, chestInventoryRows * chestInventoryColumns, inventorySlots.size(), false))
                 {
                     return null;
                 }
             }
-            else if (!this.mergeItemStack(itemStack, 0, CHEST_INVENTORY_ROWS * CHEST_INVENTORY_COLUMNS, false))
+            else if (!this.mergeItemStack(itemStack, 0, chestInventoryRows * chestInventoryColumns, false))
             {
                 return null;
             }
 
             if (itemStack.stackSize == 0)
             {
-                slot.putStack((ItemStack) null);
+                slot.putStack(null);
             }
             else
             {

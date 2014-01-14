@@ -29,6 +29,7 @@ public class BlockAludelBase extends BlockEE implements ITileEntityProvider
     {
         super(id, Material.anvil);
         this.setUnlocalizedName(Strings.ALUDEL_NAME);
+        this.setCreativeTab(EquivalentExchange3.tabsEE3);
         this.setBlockBounds(0.10F, 0.0F, 0.10F, 0.90F, 1.0F, 0.90F);
         this.setHardness(5F);
     }
@@ -87,7 +88,7 @@ public class BlockAludelBase extends BlockEE implements ITileEntityProvider
                 }
                 else if (world.getBlockTileEntity(x, y, z) instanceof TileAludel && ModBlocks.glassBell.canPlaceBlockAt(world, x, y + 1, z) && faceHit == ForgeDirection.UP.ordinal())
                 {
-                    if (player.getHeldItem().itemID == ModBlocks.glassBell.blockID)
+                    if (player.getHeldItem() != null && player.getHeldItem().itemID == ModBlocks.glassBell.blockID)
                     {
                         player.getHeldItem().getItem().onItemUse(player.getHeldItem(), player, world, x, y, z, faceHit, par7, par8, par9);
                     }

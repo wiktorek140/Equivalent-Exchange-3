@@ -180,10 +180,9 @@ public class EmcValuesDefault
         
         /* Equivalent Exchange 3 */
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 0)), new EmcValue(1));
-        valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 1)), new EmcValue(256));
+        valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 1)), new EmcValue(64));
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 2)), new EmcValue(2048));
         valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 3)), new EmcValue(8192));
-        valueMap.put(new WrappedStack(new ItemStack(ModItems.alchemicalDust, 1, 4)), new EmcValue(73728));
     }
 
     public static Map<WrappedStack, EmcValue> getDefaultValueMap()

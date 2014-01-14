@@ -1,6 +1,7 @@
 package com.pahimar.ee3.tileentity;
 
 import com.pahimar.ee3.block.ModBlocks;
+import com.pahimar.ee3.inventory.ContainerAlchemicalChest;
 import com.pahimar.ee3.lib.Sounds;
 import com.pahimar.ee3.lib.Strings;
 import net.minecraft.block.Block;
@@ -38,17 +39,28 @@ public class TileAlchemicalChest extends TileEE implements IInventory
      */
     private int ticksSinceSync;
 
-    public static final int INVENTORY_SIZE = 13 * 4;
-
     /**
      * The ItemStacks that hold the items currently being used in the Alchemical Chest
      */
     private ItemStack[] inventory;
 
-    public TileAlchemicalChest()
+    public TileAlchemicalChest(int metaData)
     {
         super();
-        inventory = new ItemStack[INVENTORY_SIZE];
+        this.state = (byte) metaData;
+
+        if (metaData == 0)
+        {
+            inventory = new ItemStack[ContainerAlchemicalChest.SMALL_INVENTORY_SIZE];
+        }
+        else if (metaData == 1)
+        {
+            inventory = new ItemStack[ContainerAlchemicalChest.MEDIUM_INVENTORY_SIZE];
+        }
+        else if (metaData == 2)
+        {
+            inventory = new ItemStack[ContainerAlchemicalChest.LARGE_INVENTORY_SIZE];
+        }
     }
 
     @Override

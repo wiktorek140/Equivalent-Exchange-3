@@ -30,13 +30,6 @@ public class ItemAlchemicalDust extends ItemEE
 
     @Override
     @SideOnly(Side.CLIENT)
-    public boolean requiresMultipleRenderPasses()
-    {
-        return true;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack itemStack, int renderPass)
     {
         if (itemStack.getItemDamage() == 0)
@@ -55,10 +48,6 @@ public class ItemAlchemicalDust extends ItemEE
         {
             return Integer.parseInt(Colours.DUST_MINIUM, 16);
         }
-        else if (itemStack.getItemDamage() == 4)
-        {
-            return Integer.parseInt(Colours.DUST_IRIDESCENT, 16);
-        }
 
         return Integer.parseInt(Colours.PURE_WHITE, 16);
     }
@@ -76,20 +65,13 @@ public class ItemAlchemicalDust extends ItemEE
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack stack, int renderPass)
-    {
-        return MathHelper.clamp_int(stack.getItemDamage(), 0, Strings.ALCHEMICAL_DUST_SUBTYPE_NAMES.length - 1) == (Strings.ALCHEMICAL_DUST_SUBTYPE_NAMES.length - 1);
-    }
-
-    @Override
     public String getItemDisplayName(ItemStack itemStack)
     {
         switch (MathHelper.clamp_int(itemStack.getItemDamage(), 0, Strings.ALCHEMICAL_DUST_SUBTYPE_NAMES.length - 1))
         {
             case 0:
             {
-                return EnumChatFormatting.WHITE + super.getItemDisplayName(itemStack);
+                return EnumChatFormatting.GRAY + super.getItemDisplayName(itemStack);
             }
             case 1:
             {
@@ -102,10 +84,6 @@ public class ItemAlchemicalDust extends ItemEE
             case 3:
             {
                 return EnumChatFormatting.RED + super.getItemDisplayName(itemStack);
-            }
-            case 4:
-            {
-                return EnumChatFormatting.GOLD + super.getItemDisplayName(itemStack);
             }
             default:
             {

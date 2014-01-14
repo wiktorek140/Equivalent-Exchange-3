@@ -17,8 +17,7 @@ import net.minecraft.item.ItemStack;
  */
 public class ContainerAlchemicalBag extends Container
 {
-
-    private final int BAG_INVENTORY_ROWS = 4;
+    private final int BAG_INVENTORY_ROWS = 9;
     private final int BAG_INVENTORY_COLUMNS = 13;
 
     private final int PLAYER_INVENTORY_ROWS = 3;
@@ -26,7 +25,6 @@ public class ContainerAlchemicalBag extends Container
 
     public ContainerAlchemicalBag(InventoryPlayer inventoryPlayer)
     {
-
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < PLAYER_INVENTORY_ROWS; ++inventoryRowIndex)
         {

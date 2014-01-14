@@ -26,6 +26,7 @@ public class BlockGlassBell extends BlockEE implements ITileEntityProvider
     {
         super(id, Material.glass);
         this.setUnlocalizedName(Strings.GLASS_BELL_NAME);
+        this.setCreativeTab(EquivalentExchange3.tabsEE3);
         this.setHardness(1.0F);
     }
 
@@ -175,7 +176,6 @@ public class BlockGlassBell extends BlockEE implements ITileEntityProvider
 
         if (world.getBlockTileEntity(x, y, z) instanceof TileGlassBell)
         {
-
             TileGlassBell tileGlassBell = (TileGlassBell) world.getBlockTileEntity(x, y, z);
 
             if (world.getBlockTileEntity(x, y - 1, z) instanceof TileAludel)

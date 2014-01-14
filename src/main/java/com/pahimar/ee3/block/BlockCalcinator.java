@@ -28,6 +28,7 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
     {
         super(id, Material.rock);
         this.setUnlocalizedName(Strings.CALCINATOR_NAME);
+        this.setCreativeTab(EquivalentExchange3.tabsEE3);
         this.setHardness(2.0F);
         this.setBlockBounds(0.1F, 0.0F, 0.1F, 0.9F, 1.0F, 0.9F);
     }
@@ -53,7 +54,14 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z)
     {
-        // TODO Vary light levels depending on whether or not we are calcinating something
+        if (world.getBlockTileEntity(x, y, z) instanceof TileCalcinator)
+        {
+            if (((TileCalcinator) world.getBlockTileEntity(x, y, z)).getState() == 1)
+            {
+                return 15;
+            }
+        }
+
         return super.getLightValue(world, x, y, z);
     }
 
@@ -62,6 +70,14 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
     {
 
         return RenderIds.calcinatorRender;
+    }
+
+    @Override
+    public boolean onBlockEventReceived(World par1World, int par2, int par3, int par4, int par5, int par6)
+    {
+        super.onBlockEventReceived(par1World, par2, par3, par4, par5, par6);
+        TileEntity tileentity = par1World.getBlockTileEntity(par2, par3, par4);
+        return tileentity != null ? tileentity.receiveClientEvent(par5, par6) : false;
     }
 
     @Override
@@ -90,7 +106,7 @@ public class BlockCalcinator extends BlockEE implements ITileEntityProvider
     {
         if (world.getBlockTileEntity(x, y, z) instanceof TileCalcinator)
         {
-            if (((TileCalcinator) world.getBlockTileEntity(x, y, z)).isBurning())
+            if (((TileCalcinator) world.getBlockTileEntity(x, y, z)).getState() == 1)
             {
                 // Fire pot particles
                 // TODO TileEntity.onClientEvent to update particles

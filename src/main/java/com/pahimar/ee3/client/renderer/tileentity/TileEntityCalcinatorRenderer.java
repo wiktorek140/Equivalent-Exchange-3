@@ -1,6 +1,7 @@
 package com.pahimar.ee3.client.renderer.tileentity;
 
 import com.pahimar.ee3.client.model.ModelCalcinator;
+import com.pahimar.ee3.helper.ColourUtils;
 import com.pahimar.ee3.lib.Textures;
 import com.pahimar.ee3.tileentity.TileCalcinator;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -26,6 +27,7 @@ public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
     private final ModelCalcinator modelCalcinator = new ModelCalcinator();
 
     @Override
+    // TODO Fix bug: https://github.com/pahimar/Equivalent-Exchange-3/issues/573
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float tick)
     {
         if (tileEntity instanceof TileCalcinator)
@@ -42,12 +44,19 @@ public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
             GL11.glRotatef(-90F, 1F, 0F, 0F);
 
             // Bind texture
-            FMLClientHandler.instance().getClient().renderEngine.bindTexture(Textures.MODEL_CALCINATOR);
+            if (tileCalcinator.getState() == 1)
+            {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(Textures.MODEL_CALCINATOR_ACTIVE);
+            }
+            else
+            {
+                FMLClientHandler.instance().getClient().renderEngine.bindTexture(Textures.MODEL_CALCINATOR_IDLE);
+            }
 
             // Render
             modelCalcinator.renderPart("Calcinator");
 
-            if (tileCalcinator.getCombinedOutputSize() > 0)
+            if (tileCalcinator.dustStackSize > 0)
             {
                 GL11.glPushMatrix();
 
@@ -55,15 +64,16 @@ public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
                 GL11.glRotatef(90F, 1F, 0F, 0F);
                 GL11.glRotatef(-45F, 0F, 1F, 0F);
 
-                float[] dustColour = tileCalcinator.getBlendedDustColour();
+                float[] dustColour = new float[]{((tileCalcinator.dustRedChannel & 0xFF) / 255F), ((tileCalcinator.dustGreenChannel & 0xFF) / 255F), ((tileCalcinator.dustBlueChannel & 0xFF) / 255F), 1F};
+
                 GL11.glColor4f(dustColour[0], dustColour[1], dustColour[2], 1F);
 
-                if (tileCalcinator.getCombinedOutputSize() <= 32)
+                if (tileCalcinator.dustStackSize <= 32)
                 {
                     GL11.glScalef(0.25F, 0.25F, 0.25F);
                     GL11.glTranslatef(0.0F, 2.20F, -2.1125F);
                 }
-                else if (tileCalcinator.getCombinedOutputSize() <= 64)
+                else if (tileCalcinator.dustStackSize <= 64)
                 {
                     GL11.glScalef(0.5F, 0.5F, 0.5F);
                     GL11.glTranslatef(-0.0125F, 0.75F, -0.7125F);
@@ -80,6 +90,39 @@ public class TileEntityCalcinatorRenderer extends TileEntitySpecialRenderer
 
             GL11.glEnable(GL11.GL_LIGHTING);
             GL11.glPopMatrix();
+        }
+    }
+
+    private static float[] getBlendedDustColour(int leftStackSize, int leftStackColour, int rightStackSize, int rightStackColour)
+    {
+        if (leftStackSize > 0 && rightStackSize > 0)
+        {
+            int stackSizeStepRange = 8;
+            int factoredLeftStackSize = leftStackSize / stackSizeStepRange;
+            int factoredRightStackSize = rightStackSize / stackSizeStepRange;
+
+            float[][] blendedColours = ColourUtils.getFloatBlendedColours(leftStackColour, rightStackColour, 2 * stackSizeStepRange - 1);
+
+            if (blendedColours != null)
+            {
+                return blendedColours[stackSizeStepRange + (factoredLeftStackSize - factoredRightStackSize)];
+            }
+            else
+            {
+                return new float[]{1F, 1F, 1F};
+            }
+        }
+        else if (leftStackSize > 0)
+        {
+            return ColourUtils.convertIntColourToFloatArray(leftStackColour);
+        }
+        else if (rightStackSize > 0)
+        {
+            return ColourUtils.convertIntColourToFloatArray(rightStackColour);
+        }
+        else
+        {
+            return new float[]{1F, 1F, 1F};
         }
     }
 }

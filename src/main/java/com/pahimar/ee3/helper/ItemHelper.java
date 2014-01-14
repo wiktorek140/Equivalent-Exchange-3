@@ -1,10 +1,7 @@
 package com.pahimar.ee3.helper;
 
-import com.pahimar.ee3.item.ModItems;
 import com.pahimar.ee3.lib.Colours;
 import com.pahimar.ee3.lib.Strings;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -95,24 +92,10 @@ public class ItemHelper
         }
     }
 
-    public static void dropMiniumShard(EntityPlayer player, EntityLivingBase entity)
-    {
-        if (GeneralHelper.isHostileEntity(entity))
-        {
-            rand = Math.random();
-
-            if (rand < 0.15d)
-            {
-                entity.dropItem(ModItems.miniumShard.itemID, 1);
-            }
-        }
-    }
-
     public static Comparator<ItemStack> comparator = new Comparator<ItemStack>()
     {
         public int compare(ItemStack itemStack1, ItemStack itemStack2)
         {
-
             if (itemStack1 != null && itemStack2 != null)
             {
                 // Sort on itemID

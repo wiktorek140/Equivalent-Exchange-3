@@ -23,19 +23,18 @@ public enum PacketTypeHandler
     SPAWN_PARTICLE(PacketSpawnParticle.class),
     SOUND_EVENT(PacketSoundEvent.class),
     ITEM_UPDATE(PacketItemUpdate.class),
-    TILE_WITH_ITEM(PacketTileWithItemUpdate.class);
+    TILE_WITH_ITEM(PacketTileWithItemUpdate.class),
+    TILE_CALCINATOR(PacketTileCalcinator.class);
 
     private Class<? extends PacketEE> clazz;
 
     PacketTypeHandler(Class<? extends PacketEE> clazz)
     {
-
         this.clazz = clazz;
     }
 
     public static PacketEE buildPacket(byte[] data)
     {
-
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
         int selector = bis.read();
         DataInputStream dis = new DataInputStream(bis);
@@ -58,7 +57,6 @@ public enum PacketTypeHandler
 
     public static PacketEE buildPacket(PacketTypeHandler type)
     {
-
         PacketEE packet = null;
 
         try
@@ -75,7 +73,6 @@ public enum PacketTypeHandler
 
     public static Packet populatePacket(PacketEE packetEE)
     {
-
         byte[] data = packetEE.populate();
 
         Packet250CustomPayload packet250 = new Packet250CustomPayload();
