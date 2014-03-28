@@ -2,8 +2,8 @@ package com.pahimar.ee3.handler;
 
 import com.pahimar.ee3.helper.ItemStackNBTHelper;
 import com.pahimar.ee3.lib.Strings;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -17,7 +17,7 @@ import net.minecraftforge.event.entity.player.PlayerDropsEvent;
  */
 public class ItemEventHandler
 {
-    @ForgeSubscribe
+    @SubscribeEvent
     @SuppressWarnings("unused")
     public void onItemPickup(EntityItemPickupEvent event)
     {
@@ -35,7 +35,7 @@ public class ItemEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     @SuppressWarnings("unused")
     public void onItemToss(ItemTossEvent event)
     {
@@ -53,7 +53,7 @@ public class ItemEventHandler
         }
     }
 
-    @ForgeSubscribe
+    @SubscribeEvent
     @SuppressWarnings("unused")
     public void onPlayerDrop(PlayerDropsEvent event)
     {

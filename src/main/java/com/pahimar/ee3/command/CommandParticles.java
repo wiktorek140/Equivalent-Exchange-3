@@ -5,7 +5,6 @@ import com.pahimar.ee3.configuration.GeneralConfiguration;
 import com.pahimar.ee3.lib.Commands;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.util.ChatMessageComponent;
 
 /**
  * Equivalent-Exchange-3
@@ -36,12 +35,12 @@ public class CommandParticles
             }
             else
             {
-                throw new WrongUsageException(Commands.COMMAND_PARTICLES_USAGE, new Object[0]);
+                throw new WrongUsageException(Commands.COMMAND_PARTICLES_USAGE);
             }
         }
         else
         {
-            throw new WrongUsageException(Commands.COMMAND_PARTICLES_USAGE, new Object[0]);
+            throw new WrongUsageException(Commands.COMMAND_PARTICLES_USAGE);
         }
     }
 

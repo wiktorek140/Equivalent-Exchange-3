@@ -3,7 +3,6 @@ package com.pahimar.ee3.item;
 import com.pahimar.ee3.lib.ItemIds;
 import com.pahimar.ee3.lib.Strings;
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.item.ItemMultiTextureTile;
 
 /**
  * Equivalent-Exchange-3
@@ -24,6 +23,7 @@ public class ModItems
     public static ItemEE chalk;
     public static ItemEE diviningRod;
     public static ItemEE alchemicalFuel;
+    public static ItemEE alchemicalUpgrade;
 
     public static ItemMultiTextureTile alchemicalFuelBlock;
 
@@ -39,6 +39,7 @@ public class ModItems
         chalk = new ItemChalk(ItemIds.CHALK);
         diviningRod = new ItemDiviningRod(ItemIds.DIVINING_ROD);
         alchemicalFuel = new ItemAlchemicalFuel(ItemIds.ALCHEMICAL_FUEL);
+        alchemicalUpgrade = new ItemAlchemicalUpgrade(ItemIds.ALCHEMICAL_UPGRADE);
 
         // Set container items
         miniumStone.setContainerItem(miniumStone);
@@ -54,5 +55,6 @@ public class ModItems
         GameRegistry.registerItem(chalk, "item." + Strings.CHALK_NAME);
         GameRegistry.registerItem(diviningRod, "item." + Strings.DIVINING_ROD_NAME);
         GameRegistry.registerItem(alchemicalFuel, "item." + Strings.ALCHEMICAL_FUEL_NAME);
+        GameRegistry.registerItem(alchemicalUpgrade, "item." + Strings.ALCHEMICAL_UPGRADE_NAME);
     }
 }

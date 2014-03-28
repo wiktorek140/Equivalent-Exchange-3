@@ -16,34 +16,32 @@ public class GuiHandler implements IGuiHandler
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-
         if (ID == GuiIds.PORTABLE_CRAFTING)
         {
             return new ContainerPortableCrafting(player.inventory, world, x, y, z);
         }
         else if (ID == GuiIds.CALCINATOR)
         {
-            TileCalcinator tileCalcinator = (TileCalcinator) world.getBlockTileEntity(x, y, z);
+            TileCalcinator tileCalcinator = (TileCalcinator) world.getTileEntity(x, y, z);
             return new ContainerCalcinator(player.inventory, tileCalcinator);
         }
         else if (ID == GuiIds.ALCHEMICAL_CHEST)
         {
-            TileAlchemicalChest tileAlchemicalChest = (TileAlchemicalChest) world.getBlockTileEntity(x, y, z);
+            TileAlchemicalChest tileAlchemicalChest = (TileAlchemicalChest) world.getTileEntity(x, y, z);
             return new ContainerAlchemicalChest(player.inventory, tileAlchemicalChest);
         }
         else if (ID == GuiIds.ALCHEMICAL_BAG)
-        // TODO Alchemical Bag inventory work is incomplete
         {
-            return new ContainerAlchemicalBag(player.inventory);
+            return new ContainerAlchemicalBag(player, new InventoryAlchemicalBag(player.getHeldItem()));
         }
         else if (ID == GuiIds.ALUDEL)
         {
-            TileAludel tileAludel = (TileAludel) world.getBlockTileEntity(x, y, z);
+            TileAludel tileAludel = (TileAludel) world.getTileEntity(x, y, z);
             return new ContainerAludel(player.inventory, tileAludel);
         }
         else if (ID == GuiIds.GLASS_BELL)
         {
-            TileGlassBell tileGlassBell = (TileGlassBell) world.getBlockTileEntity(x, y, z);
+            TileGlassBell tileGlassBell = (TileGlassBell) world.getTileEntity(x, y, z);
             return new ContainerGlassBell(player.inventory, tileGlassBell);
         }
 
@@ -53,34 +51,32 @@ public class GuiHandler implements IGuiHandler
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-
         if (ID == GuiIds.PORTABLE_CRAFTING)
         {
             return new GuiPortableCrafting(player, world, x, y, z);
         }
         else if (ID == GuiIds.CALCINATOR)
         {
-            TileCalcinator tileCalcinator = (TileCalcinator) world.getBlockTileEntity(x, y, z);
+            TileCalcinator tileCalcinator = (TileCalcinator) world.getTileEntity(x, y, z);
             return new GuiCalcinator(player.inventory, tileCalcinator);
         }
         else if (ID == GuiIds.ALCHEMICAL_CHEST)
         {
-            TileAlchemicalChest tileAlchemicalChest = (TileAlchemicalChest) world.getBlockTileEntity(x, y, z);
+            TileAlchemicalChest tileAlchemicalChest = (TileAlchemicalChest) world.getTileEntity(x, y, z);
             return new GuiAlchemicalChest(player.inventory, tileAlchemicalChest);
         }
         else if (ID == GuiIds.ALCHEMICAL_BAG)
-        // TODO Alchemical Bag inventory work is incomplete
         {
-            return new GuiAlchemicalBag(player.inventory);
+            return new GuiAlchemicalBag(player, new InventoryAlchemicalBag(player.getHeldItem()));
         }
         else if (ID == GuiIds.ALUDEL)
         {
-            TileAludel tileAludel = (TileAludel) world.getBlockTileEntity(x, y, z);
+            TileAludel tileAludel = (TileAludel) world.getTileEntity(x, y, z);
             return new GuiAludel(player.inventory, tileAludel);
         }
         else if (ID == GuiIds.GLASS_BELL)
         {
-            TileGlassBell tileGlassBell = (TileGlassBell) world.getBlockTileEntity(x, y, z);
+            TileGlassBell tileGlassBell = (TileGlassBell) world.getTileEntity(x, y, z);
             return new GuiGlassBell(player.inventory, tileGlassBell);
         }
 

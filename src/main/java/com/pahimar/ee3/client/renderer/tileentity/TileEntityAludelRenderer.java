@@ -14,7 +14,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -70,19 +70,18 @@ public class TileEntityAludelRenderer extends TileEntitySpecialRenderer
              */
             GL11.glPushMatrix();
 
-            TileEntity tileGlassBell = tileAludel.worldObj.getBlockTileEntity(tileAludel.xCoord, tileAludel.yCoord + 1, tileAludel.zCoord);
+            TileEntity tileGlassBell = tileAludel.getWorldObj().getTileEntity(tileAludel.xCoord, tileAludel.yCoord + 1, tileAludel.zCoord);
 
             if (tileGlassBell instanceof TileGlassBell)
             {
-                if (tileAludel.getStackInSlot(TileAludel.INPUT_INVENTORY_INDEX) != null)
+                if (tileAludel.outputItemStack != null)
                 {
-
-                    float scaleFactor = getGhostItemScaleFactor(tileAludel.getStackInSlot(TileAludel.INPUT_INVENTORY_INDEX));
+                    float scaleFactor = getGhostItemScaleFactor(tileAludel.outputItemStack);
                     float rotationAngle = (float) (720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
 
-                    EntityItem ghostEntityItem = new EntityItem(tileAludel.worldObj);
+                    EntityItem ghostEntityItem = new EntityItem(tileAludel.getWorldObj());
                     ghostEntityItem.hoverStart = 0.0F;
-                    ghostEntityItem.setEntityItemStack(tileAludel.getStackInSlot(TileAludel.INPUT_INVENTORY_INDEX));
+                    ghostEntityItem.setEntityItemStack(tileAludel.outputItemStack);
 
                     GL11.glTranslatef((float) x + 0.5F, (float) y + 1.25F, (float) z + 0.5F);
                     GL11.glScalef(scaleFactor, scaleFactor, scaleFactor);
@@ -100,7 +99,6 @@ public class TileEntityAludelRenderer extends TileEntitySpecialRenderer
 
     private void scaleTranslateRotate(double x, double y, double z, ForgeDirection orientation)
     {
-
         if (orientation == ForgeDirection.NORTH)
         {
             GL11.glTranslated(x + 1, y, z);
@@ -129,7 +127,6 @@ public class TileEntityAludelRenderer extends TileEntitySpecialRenderer
 
     private float getGhostItemScaleFactor(ItemStack itemStack)
     {
-
         float scaleFactor = 1.0F;
 
         if (itemStack != null)

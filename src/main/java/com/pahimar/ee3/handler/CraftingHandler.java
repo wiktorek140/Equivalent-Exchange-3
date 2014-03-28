@@ -2,12 +2,12 @@ package com.pahimar.ee3.handler;
 
 import com.pahimar.ee3.configuration.ConfigurationSettings;
 import com.pahimar.ee3.helper.ItemStackNBTHelper;
+import com.pahimar.ee3.item.ItemAlchemicalBag;
 import com.pahimar.ee3.item.crafting.RecipesAlchemicalBagDyes;
 import com.pahimar.ee3.item.crafting.RecipesTransmutationStones;
 import com.pahimar.ee3.item.crafting.RecipesVanilla;
 import com.pahimar.ee3.lib.Strings;
 import com.pahimar.ee3.recipe.RecipesAludel;
-import cpw.mods.fml.common.ICraftingHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -38,16 +38,25 @@ public class CraftingHandler implements ICraftingHandler
     }
 
     @Override
-    public void onCrafting(EntityPlayer player, ItemStack item, IInventory craftMatrix)
+    public void onCrafting(EntityPlayer player, ItemStack itemStack, IInventory craftMatrix)
     {
         if (player.worldObj.isRemote)
         {
             doPortableCrafting(player, craftMatrix);
         }
+
+        if (!player.worldObj.isRemote)
+        {
+            // Set the UUID on an Alchemical Bag when picked up from crafting
+            if (itemStack.getItem() instanceof ItemAlchemicalBag)
+            {
+                ItemStackNBTHelper.setUUID(itemStack);
+            }
+        }
     }
 
     @Override
-    public void onSmelting(EntityPlayer player, ItemStack item)
+    public void onSmelting(EntityPlayer player, ItemStack itemStack)
     {
 
     }
@@ -76,7 +85,7 @@ public class CraftingHandler implements ICraftingHandler
             }
         }
 
-        ItemStack itemStack = null;
+        ItemStack itemStack;
         if (openStone != null)
         {
             for (int i = 0; i < craftMatrix.getSizeInventory(); i++)

@@ -1,10 +1,10 @@
 package com.pahimar.ee3.tileentity;
 
-import com.pahimar.ee3.block.ModBlocks;
+import com.pahimar.ee3.block.BlockAlchemicalChest;
 import com.pahimar.ee3.inventory.ContainerAlchemicalChest;
 import com.pahimar.ee3.lib.Sounds;
 import com.pahimar.ee3.lib.Strings;
-import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,7 +66,6 @@ public class TileAlchemicalChest extends TileEE implements IInventory
     @Override
     public int getSizeInventory()
     {
-
         return inventory.length;
     }
 
@@ -124,11 +123,11 @@ public class TileAlchemicalChest extends TileEE implements IInventory
             itemStack.stackSize = this.getInventoryStackLimit();
         }
 
-        this.onInventoryChanged();
+        this.markDirty();
     }
 
     @Override
-    public String getInvName()
+    public String getInventoryName()
     {
         return this.hasCustomName() ? this.getCustomName() : Strings.CONTAINER_ALCHEMICAL_CHEST_NAME;
     }
@@ -137,6 +136,17 @@ public class TileAlchemicalChest extends TileEE implements IInventory
     public int getInventoryStackLimit()
     {
         return 64;
+    }
+
+    /**
+     * Do not make give this method the name canInteractWith because it clashes with Container
+     *
+     * @param entityplayer
+     */
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer entityplayer)
+    {
+        return true;
     }
 
     /**
@@ -157,17 +167,27 @@ public class TileAlchemicalChest extends TileEE implements IInventory
     }
 
     @Override
-    public void openChest()
+    public void openInventory()
     {
-        ++numUsingPlayers;
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, ModBlocks.alchemicalChest.blockID, 1, numUsingPlayers);
+        if (this.numUsingPlayers < 0)
+        {
+            this.numUsingPlayers = 0;
+        }
+
+        ++this.numUsingPlayers;
+        this.worldObj.addBlockEvent(xCoord, yCoord, zCoord, this.getBlockType(), 1, numUsingPlayers);
+        this.worldObj.notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
     }
 
     @Override
-    public void closeChest()
+    public void closeInventory()
     {
-        --numUsingPlayers;
-        worldObj.addBlockEvent(xCoord, yCoord, zCoord, ModBlocks.alchemicalChest.blockID, 1, numUsingPlayers);
+        if (this.getBlockType() instanceof BlockAlchemicalChest)
+        {
+            --this.numUsingPlayers;
+            this.worldObj.addBlockEvent(xCoord, yCoord, zCoord, this.getBlockType(), 1, numUsingPlayers);
+            this.worldObj.notifyBlocksOfNeighborChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
+        }
     }
 
     /**
@@ -181,7 +201,7 @@ public class TileAlchemicalChest extends TileEE implements IInventory
 
         if (++ticksSinceSync % 20 * 4 == 0)
         {
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, Block.enderChest.blockID, 1, numUsingPlayers);
+            worldObj.addBlockEvent(xCoord, yCoord, zCoord, this.getBlockType(), 1, numUsingPlayers);
         }
 
         prevLidAngle = lidAngle;
@@ -233,11 +253,11 @@ public class TileAlchemicalChest extends TileEE implements IInventory
         super.readFromNBT(nbtTagCompound);
 
         // Read in the ItemStacks in the inventory from NBT
-        NBTTagList tagList = nbtTagCompound.getTagList("Items");
+        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
         inventory = new ItemStack[this.getSizeInventory()];
         for (int i = 0; i < tagList.tagCount(); ++i)
         {
-            NBTTagCompound tagCompound = (NBTTagCompound) tagList.tagAt(i);
+            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             byte slotIndex = tagCompound.getByte("Slot");
             if (slotIndex >= 0 && slotIndex < inventory.length)
             {
@@ -267,7 +287,7 @@ public class TileAlchemicalChest extends TileEE implements IInventory
     }
 
     @Override
-    public boolean isInvNameLocalized()
+    public boolean hasCustomInventoryName()
     {
         return this.hasCustomName();
     }

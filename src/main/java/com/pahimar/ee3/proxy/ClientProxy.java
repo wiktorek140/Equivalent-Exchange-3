@@ -21,10 +21,7 @@ import com.pahimar.ee3.network.packet.PacketRequestEvent;
 import com.pahimar.ee3.tileentity.*;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,7 +29,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -136,30 +132,39 @@ public class ClientProxy extends CommonProxy
 
         if (tileEntity instanceof TileGlassBell)
         {
-            ItemStack itemStack = new ItemStack(itemID, stackSize, metaData);
-            if (color != Integer.parseInt(Colours.PURE_WHITE, 16))
+            ItemStack itemStack = null;
+            if (itemID != -1)
             {
-                ItemHelper.setColor(itemStack, color);
+                itemStack = new ItemStack(itemID, stackSize, metaData);
+                if (color != Integer.parseInt(Colours.PURE_WHITE, 16))
+                {
+                    ItemHelper.setColor(itemStack, color);
+                }
             }
 
-            ((TileGlassBell) tileEntity).setInventorySlotContents(TileGlassBell.DISPLAY_SLOT_INVENTORY_INDEX, itemStack);
+            ((TileGlassBell) tileEntity).outputItemStack = itemStack;
             world.updateAllLightTypes(x, y, z);
         }
         else if (tileEntity instanceof TileAludel)
         {
-            ItemStack itemStack = new ItemStack(itemID, stackSize, metaData);
-            if (color != Integer.parseInt(Colours.PURE_WHITE, 16))
+            ItemStack itemStack = null;
+
+            if (itemID != -1)
             {
-                ItemHelper.setColor(itemStack, color);
+                itemStack = new ItemStack(itemID, stackSize, metaData);
+                if (color != Integer.parseInt(Colours.PURE_WHITE, 16))
+                {
+                    ItemHelper.setColor(itemStack, color);
+                }
             }
 
-            ((TileAludel) tileEntity).setInventorySlotContents(TileAludel.INPUT_INVENTORY_INDEX, itemStack);
+            ((TileAludel) tileEntity).outputItemStack = itemStack;
             world.updateAllLightTypes(x, y, z);
         }
     }
 
     @Override
-    public void handleTileCalcinatorPacket(int x, int y, int z, ForgeDirection orientation, byte state, String customName, int dustStackSize, byte dustRedChannel, byte dustGreenChannel, byte dustBlueChannel)
+    public void handleTileCalcinatorPacket(int x, int y, int z, ForgeDirection orientation, byte state, String customName, byte leftStackSize, byte leftStackMeta, byte rightStackSize, byte rightStackMeta)
     {
         World world = FMLClientHandler.instance().getClient().theWorld;
         TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
@@ -168,10 +173,10 @@ public class ClientProxy extends CommonProxy
 
         if (tileEntity instanceof TileCalcinator)
         {
-            ((TileCalcinator) tileEntity).dustStackSize = dustStackSize;
-            ((TileCalcinator) tileEntity).dustRedChannel = dustRedChannel;
-            ((TileCalcinator) tileEntity).dustGreenChannel = dustGreenChannel;
-            ((TileCalcinator) tileEntity).dustBlueChannel = dustBlueChannel;
+            ((TileCalcinator) tileEntity).leftStackSize = leftStackSize;
+            ((TileCalcinator) tileEntity).leftStackMeta = leftStackMeta;
+            ((TileCalcinator) tileEntity).rightStackSize = rightStackSize;
+            ((TileCalcinator) tileEntity).rightStackMeta = rightStackMeta;
             world.updateAllLightTypes(x, y, z);
         }
     }

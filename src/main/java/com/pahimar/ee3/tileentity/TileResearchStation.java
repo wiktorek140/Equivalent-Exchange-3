@@ -1,5 +1,6 @@
 package com.pahimar.ee3.tileentity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
@@ -67,7 +68,7 @@ public class TileResearchStation extends TileEE implements IInventory
      * Returns the name of the inventory.
      */
     @Override
-    public String getInvName()
+    public String getInventoryName()
     {
         return null;
     }
@@ -77,7 +78,7 @@ public class TileResearchStation extends TileEE implements IInventory
      * language. Otherwise it will be used directly.
      */
     @Override
-    public boolean isInvNameLocalized()
+    public boolean hasCustomInventoryName()
     {
         return false;
     }
@@ -92,14 +93,25 @@ public class TileResearchStation extends TileEE implements IInventory
         return 0;
     }
 
+    /**
+     * Do not make give this method the name canInteractWith because it clashes with Container
+     *
+     * @param entityplayer
+     */
     @Override
-    public void openChest()
+    public boolean isUseableByPlayer(EntityPlayer entityplayer)
+    {
+        return true;
+    }
+
+    @Override
+    public void openInventory()
     {
 
     }
 
     @Override
-    public void closeChest()
+    public void closeInventory()
     {
 
     }

@@ -2,6 +2,7 @@ package com.pahimar.ee3.block;
 
 import com.pahimar.ee3.EquivalentExchange3;
 import com.pahimar.ee3.lib.GuiIds;
+import com.pahimar.ee3.lib.Particles;
 import com.pahimar.ee3.lib.RenderIds;
 import com.pahimar.ee3.lib.Strings;
 import com.pahimar.ee3.tileentity.TileAludel;
@@ -14,7 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+
+import java.util.Random;
 
 /**
  * Equivalent-Exchange-3
@@ -60,6 +62,14 @@ public class BlockAludelBase extends BlockEE implements ITileEntityProvider
     }
 
     @Override
+    public boolean onBlockEventReceived(World par1World, int par2, int par3, int par4, int par5, int par6)
+    {
+        super.onBlockEventReceived(par1World, par2, par3, par4, par5, par6);
+        TileEntity tileentity = par1World.getBlockTileEntity(par2, par3, par4);
+        return tileentity != null ? tileentity.receiveClientEvent(par5, par6) : false;
+    }
+
+    @Override
     public void breakBlock(World world, int x, int y, int z, int id, int meta)
     {
         if (world.getBlockTileEntity(x, y + 1, z) instanceof TileGlassBell)
@@ -86,12 +96,13 @@ public class BlockAludelBase extends BlockEE implements ITileEntityProvider
                 {
                     player.openGui(EquivalentExchange3.instance, GuiIds.ALUDEL, world, x, y, z);
                 }
-                else if (world.getBlockTileEntity(x, y, z) instanceof TileAludel && ModBlocks.glassBell.canPlaceBlockAt(world, x, y + 1, z) && faceHit == ForgeDirection.UP.ordinal())
+            }
+
+            if (world.getBlockTileEntity(x, y, z) instanceof TileAludel && ModBlocks.glassBell.canPlaceBlockAt(world, x, y + 1, z) && faceHit == ForgeDirection.UP.ordinal())
+            {
+                if (player.getHeldItem() != null && player.getHeldItem().itemID == ModBlocks.glassBell.blockID)
                 {
-                    if (player.getHeldItem() != null && player.getHeldItem().itemID == ModBlocks.glassBell.blockID)
-                    {
-                        player.getHeldItem().getItem().onItemUse(player.getHeldItem(), player, world, x, y, z, faceHit, par7, par8, par9);
-                    }
+                    return false;
                 }
             }
 
@@ -119,14 +130,64 @@ public class BlockAludelBase extends BlockEE implements ITileEntityProvider
                 tileGlassBell.setInventorySlotContents(TileGlassBell.DISPLAY_SLOT_INVENTORY_INDEX, null);
 
                 tileAludel.setInventorySlotContents(TileAludel.INPUT_INVENTORY_INDEX, itemStackGlassBell);
+
+                tileAludel.hasGlassBell = true;
             }
         }
     }
 
     @Override
+    public void onNeighborBlockChange(World world, int x, int y, int z, int blockID)
+    {
+        TileAludel aludel = (TileAludel) world.getBlockTileEntity(x, y, z);
+        aludel.hasGlassBell = world.getBlockTileEntity(x, y + 1, z) instanceof TileGlassBell;
+
+        super.onNeighborBlockChange(world, x, y, z, blockID);
+    }
+
+    @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z)
     {
-        // TODO Vary light levels depending on if we are burning or not
-        return 0;
+        if (world.getBlockTileEntity(x, y, z) instanceof TileAludel)
+        {
+            if (((TileAludel) world.getBlockTileEntity(x, y, z)).getState() == 1)
+            {
+                return 15;
+            }
+        }
+
+        return super.getLightValue(world, x, y, z);
+    }
+
+    @Override
+    public void randomDisplayTick(World world, int x, int y, int z, Random random)
+    {
+        TileEntity tile = world.getBlockTileEntity(x, y, z);
+        if (tile instanceof TileAludel)
+        {
+            if (((TileAludel) tile).getState() == 1)
+            {
+                switch (((TileAludel) tile).getOrientation())
+                {
+                    case NORTH:
+                        world.spawnParticle(Particles.FLAME, (double) x + 0.5F, (double) y + 0.33F, (double) z + 0.175F, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case SOUTH:
+                        world.spawnParticle(Particles.FLAME, (double) x + 0.5F, (double) y + 0.33F, (double) z + 0.825F, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case WEST:
+                        world.spawnParticle(Particles.FLAME, (double) x + 0.175F, (double) y + 0.33F, (double) z + 0.5F, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case EAST:
+                        world.spawnParticle(Particles.FLAME, (double) x + 0.825F, (double) y + 0.33F, (double) z + 0.5F, 0.0D, 0.0D, 0.0D);
+                        break;
+                }
+
+                world.spawnParticle(Particles.NORMAL_SMOKE, (double) x + 0.5F, (double) y + 0.7F, (double) z + 0.0F, 0.0D, 0.05D, 0.0D);
+                world.spawnParticle(Particles.NORMAL_SMOKE, (double) x + 0.5F, (double) y + 0.7F, (double) z + 1.0F, 0.0D, 0.05D, 0.0D);
+                world.spawnParticle(Particles.NORMAL_SMOKE, (double) x + 0.0F, (double) y + 0.7F, (double) z + 0.5F, 0.0D, 0.05D, 0.0D);
+                world.spawnParticle(Particles.NORMAL_SMOKE, (double) x + 1.0F, (double) y + 0.7F, (double) z + 0.5F, 0.0D, 0.05D, 0.0D);
+            }
+        }
     }
 }

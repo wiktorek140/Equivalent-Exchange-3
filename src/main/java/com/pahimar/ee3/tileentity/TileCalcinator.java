@@ -1,20 +1,19 @@
 package com.pahimar.ee3.tileentity;
 
-import com.pahimar.ee3.helper.ColourUtils;
-import com.pahimar.ee3.lib.Colours;
 import com.pahimar.ee3.lib.Strings;
-import com.pahimar.ee3.network.PacketTypeHandler;
-import com.pahimar.ee3.network.packet.PacketTileCalcinator;
 import com.pahimar.ee3.recipe.CalcinationManager;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.packet.Packet;
+import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.MathHelper;
+import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Equivalent-Exchange-3
@@ -23,30 +22,41 @@ import net.minecraft.util.MathHelper;
  *
  * @author pahimar
  */
-public class TileCalcinator extends TileEE implements IInventory
+public class TileCalcinator extends TileEE implements ISidedInventory
 {
+    public static final int INVENTORY_SIZE = 4;
+    public static final int FUEL_INVENTORY_INDEX = 0;
+    public static final int INPUT_INVENTORY_INDEX = 1;
+    public static final int OUTPUT_LEFT_INVENTORY_INDEX = 2;
+    public static final int OUTPUT_RIGHT_INVENTORY_INDEX = 3;
+    private static final int DEFAULT_ITEM_SUCK_COOL_DOWN = 20;
+    public int deviceCookTime;              // How much longer the Calcinator will cook
+    public int fuelBurnTime;                // The fuel value for the currently burning fuel
+    public int itemCookTime;                // How long the current item has been "cooking"
+
+    public byte leftStackSize, leftStackMeta, rightStackSize, rightStackMeta;
+
+    public int itemSuckCoolDown = 0;
     /**
      * The ItemStacks that hold the items currently being used in the Calcinator
      */
     private ItemStack[] inventory;
 
-    public static final int INVENTORY_SIZE = 4;
-
-    public static final int FUEL_INVENTORY_INDEX = 0;
-    public static final int INPUT_INVENTORY_INDEX = 1;
-    public static final int OUTPUT_LEFT_INVENTORY_INDEX = 2;
-    public static final int OUTPUT_RIGHT_INVENTORY_INDEX = 3;
-
-    public int deviceCookTime;              // How much longer the Calcinator will cook
-    public int fuelBurnTime;                // The fuel value for the currently burning fuel
-    public int itemCookTime;                // How long the current item has been "cooking"
-
-    public int dustStackSize;
-    public byte dustRedChannel, dustGreenChannel, dustBlueChannel;
-
     public TileCalcinator()
     {
         inventory = new ItemStack[INVENTORY_SIZE];
+    }
+
+    /**
+     * Sucks one item into the given hopper from an inventory or EntityItem above it.
+     */
+    public static boolean suckItemsIntoCalcinator(TileCalcinator calcinator)
+    {
+//        EntityItem entityitem = TileEntityHopper.getEntityAbove(calcinator.getWorldObj(), calcinator.xCoord, calcinator.yCoord + 1.0D, calcinator.zCoord);
+        EntityItem entityitem = TileEntityHopper.func_145897_a(calcinator.getWorldObj(), calcinator.xCoord, calcinator.yCoord + 1.0D, calcinator.zCoord);
+
+//        return entityitem != null && TileEntityHopper.insertStackFromEntity(calcinator, entityitem);
+        return entityitem != null && TileEntityHopper.func_145898_a(calcinator, entityitem);
     }
 
     /**
@@ -113,7 +123,7 @@ public class TileCalcinator extends TileEE implements IInventory
     }
 
     @Override
-    public String getInvName()
+    public String getInventoryName()
     {
         return this.hasCustomName() ? this.getCustomName() : Strings.CONTAINER_CALCINATOR_NAME;
     }
@@ -122,6 +132,17 @@ public class TileCalcinator extends TileEE implements IInventory
     public int getInventoryStackLimit()
     {
         return 64;
+    }
+
+    /**
+     * Do not make give this method the name canInteractWith because it clashes with Container
+     *
+     * @param entityplayer
+     */
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer entityplayer)
+    {
+        return true;
     }
 
     @Override
@@ -135,22 +156,22 @@ public class TileCalcinator extends TileEE implements IInventory
         }
         else if (eventId == 2)
         {
-            this.dustStackSize = eventData;
+            this.leftStackSize = (byte) eventData;
             return true;
         }
         else if (eventId == 3)
         {
-            this.dustRedChannel = (byte) eventData;
+            this.leftStackMeta = (byte) eventData;
             return true;
         }
         else if (eventId == 4)
         {
-            this.dustGreenChannel = (byte) eventData;
+            this.rightStackSize = (byte) eventData;
             return true;
         }
         else if (eventId == 5)
         {
-            this.dustBlueChannel = (byte) eventData;
+            this.rightStackMeta = (byte) eventData;
             return true;
         }
         else
@@ -160,13 +181,13 @@ public class TileCalcinator extends TileEE implements IInventory
     }
 
     @Override
-    public void openChest()
+    public void openInventory()
     {
 
     }
 
     @Override
-    public void closeChest()
+    public void closeInventory()
     {
 
     }
@@ -177,11 +198,11 @@ public class TileCalcinator extends TileEE implements IInventory
         super.readFromNBT(nbtTagCompound);
 
         // Read in the ItemStacks in the inventory from NBT
-        NBTTagList tagList = nbtTagCompound.getTagList("Items");
+        NBTTagList tagList = nbtTagCompound.getTagList("Items", 10);
         inventory = new ItemStack[this.getSizeInventory()];
         for (int i = 0; i < tagList.tagCount(); ++i)
         {
-            NBTTagCompound tagCompound = (NBTTagCompound) tagList.tagAt(i);
+            NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
             byte slotIndex = tagCompound.getByte("Slot");
             if (slotIndex >= 0 && slotIndex < inventory.length)
             {
@@ -192,6 +213,7 @@ public class TileCalcinator extends TileEE implements IInventory
         deviceCookTime = nbtTagCompound.getInteger("deviceCookTime");
         fuelBurnTime = nbtTagCompound.getInteger("fuelBurnTime");
         itemCookTime = nbtTagCompound.getInteger("itemCookTime");
+        itemSuckCoolDown = nbtTagCompound.getInteger("itemSuckCoolDown");
     }
 
     @Override
@@ -215,10 +237,11 @@ public class TileCalcinator extends TileEE implements IInventory
         nbtTagCompound.setInteger("deviceCookTime", deviceCookTime);
         nbtTagCompound.setInteger("fuelBurnTime", fuelBurnTime);
         nbtTagCompound.setInteger("itemCookTime", itemCookTime);
+        nbtTagCompound.setInteger("itemSuckCoolDown", itemSuckCoolDown);
     }
 
     @Override
-    public boolean isInvNameLocalized()
+    public boolean hasCustomInventoryName()
     {
         return this.hasCustomName();
     }
@@ -226,7 +249,21 @@ public class TileCalcinator extends TileEE implements IInventory
     @Override
     public boolean isItemValidForSlot(int slotIndex, ItemStack itemStack)
     {
-        return true;
+        switch (slotIndex)
+        {
+            case FUEL_INVENTORY_INDEX:
+            {
+                return TileEntityFurnace.isItemFuel(itemStack);
+            }
+            case INPUT_INVENTORY_INDEX:
+            {
+                return true;
+            }
+            default:
+            {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -286,15 +323,29 @@ public class TileCalcinator extends TileEE implements IInventory
             {
                 sendUpdate = true;
             }
+
+            //Item sucking
+            if (this.itemSuckCoolDown > 0)
+            {
+                itemSuckCoolDown--;
+            }
+            else
+            {
+                if (suckItemsIntoCalcinator(this))
+                {
+                    markDirty();
+                }
+                itemSuckCoolDown = DEFAULT_ITEM_SUCK_COOL_DOWN;
+            }
         }
 
         if (sendUpdate)
         {
-            this.onInventoryChanged();
+            this.markDirty();
             this.state = this.deviceCookTime > 0 ? (byte) 1 : (byte) 0;
-            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID, 1, this.state);
+            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType(), 1, this.state);
             sendDustPileData();
-            this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID);
+            this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.getBlockType());
         }
     }
 
@@ -307,12 +358,12 @@ public class TileCalcinator extends TileEE implements IInventory
     @SideOnly(Side.CLIENT)
     public int getBurnTimeRemainingScaled(int scale)
     {
-        if (this.itemCookTime == 0)
+        if (this.fuelBurnTime > 0)
         {
-            this.itemCookTime = 200;
+            return this.deviceCookTime * scale / this.fuelBurnTime;
         }
 
-        return this.deviceCookTime * scale / this.fuelBurnTime;
+        return 0;
     }
 
     /**
@@ -374,23 +425,7 @@ public class TileCalcinator extends TileEE implements IInventory
         if (this.canCalcinate())
         {
             ItemStack alchemicalDustStack = CalcinationManager.getCalcinationResult(this.inventory[INPUT_INVENTORY_INDEX]);
-
-            if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] == null)
-            {
-                this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] = alchemicalDustStack.copy();
-            }
-            else if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].isItemEqual(alchemicalDustStack))
-            {
-                inventory[OUTPUT_LEFT_INVENTORY_INDEX].stackSize += alchemicalDustStack.stackSize;
-            }
-            else if (this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX] == null)
-            {
-                this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX] = alchemicalDustStack.copy();
-            }
-            else if (this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].isItemEqual(alchemicalDustStack))
-            {
-                inventory[OUTPUT_RIGHT_INVENTORY_INDEX].stackSize += alchemicalDustStack.stackSize;
-            }
+            addItemStackToOutput(alchemicalDustStack.copy());
 
             this.inventory[INPUT_INVENTORY_INDEX].stackSize--;
 
@@ -401,11 +436,46 @@ public class TileCalcinator extends TileEE implements IInventory
         }
     }
 
+    private void addItemStackToOutput(ItemStack alchemicalDustStack)
+    {
+        int maxStackSize = Math.min(getInventoryStackLimit(), alchemicalDustStack.getMaxStackSize());
+
+        if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] == null)
+        {
+            this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] = alchemicalDustStack;
+            return;
+        }
+        if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].isItemEqual(alchemicalDustStack)
+                && this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].stackSize < maxStackSize)
+        {
+            int addedSize = Math.min(alchemicalDustStack.stackSize, maxStackSize - this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].stackSize);
+            alchemicalDustStack.stackSize -= addedSize;
+            this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].stackSize += addedSize;
+            if (alchemicalDustStack == null || alchemicalDustStack.stackSize == 0)
+            {
+                return;
+            }
+        }
+        if (this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX] == null)
+        {
+            this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX] = alchemicalDustStack;
+            return;
+        }
+        if (this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].isItemEqual(alchemicalDustStack)
+                && this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].stackSize < maxStackSize)
+        {
+            int addedSize = Math.min(alchemicalDustStack.stackSize, maxStackSize - this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].stackSize);
+            alchemicalDustStack.stackSize -= addedSize;
+            this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].stackSize += addedSize;
+        }
+    }
+
     @Override
     public Packet getDescriptionPacket()
     {
-        byte[] blendedColours = getBlendedColour();
-        return PacketTypeHandler.populatePacket(new PacketTileCalcinator(xCoord, yCoord, zCoord, orientation, state, customName, getLeftStackSize() + getRightStackSize(), blendedColours[0], blendedColours[1], blendedColours[2]));
+//        return PacketTypeHandler.populatePacket(new PacketTileCalcinator(xCoord, yCoord, zCoord, orientation, state, customName, (byte) getLeftStackSize(), (byte) getLeftStackMeta(), (byte) getRightStackSize(), (byte) getRightStackMeta()));
+        // FIXME
+        return null;
     }
 
     private int getLeftStackSize()
@@ -413,6 +483,16 @@ public class TileCalcinator extends TileEE implements IInventory
         if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] != null)
         {
             return this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].stackSize;
+        }
+
+        return 0;
+    }
+
+    private int getLeftStackMeta()
+    {
+        if (this.inventory[OUTPUT_LEFT_INVENTORY_INDEX] != null)
+        {
+            return this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].getItemDamage();
         }
 
         return 0;
@@ -428,50 +508,48 @@ public class TileCalcinator extends TileEE implements IInventory
         return 0;
     }
 
-    private byte[] getBlendedColour()
+    private int getRightStackMeta()
     {
-        if (getLeftStackSize() > 0 & getRightStackSize() > 0)
+        if (this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX] != null)
         {
-            int stepSize = 8;
-            int factoredLeftStackSize = getLeftStackSize() / stepSize;
-            int factoredRightStackSize = getRightStackSize() / stepSize;
+            return this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].getItemDamage();
+        }
 
-            byte[] leftColours = ColourUtils.convertIntColourToByteArray(Integer.parseInt(Colours.DUST_COLOURS[MathHelper.clamp_int(this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].getItemDamage(), 0, Colours.DUST_COLOURS.length - 1)], 16));
-            byte[] rightColours = ColourUtils.convertIntColourToByteArray(Integer.parseInt(Colours.DUST_COLOURS[MathHelper.clamp_int(this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].getItemDamage(), 0, Colours.DUST_COLOURS.length - 1)], 16));
-
-            byte[][] blendedColours = ColourUtils.getByteBlendedColours(leftColours, rightColours, stepSize);
-
-            if (blendedColours != null)
-            {
-                return blendedColours[stepSize + (factoredLeftStackSize - factoredRightStackSize)];
-            }
-            else
-            {
-                return new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-            }
-        }
-        else if (getLeftStackSize() > 0)
-        {
-            int stackColour = Integer.parseInt(Colours.DUST_COLOURS[MathHelper.clamp_int(this.inventory[OUTPUT_LEFT_INVENTORY_INDEX].getItemDamage(), 0, Colours.DUST_COLOURS.length - 1)], 16);
-            return ColourUtils.convertIntColourToByteArray(stackColour);
-        }
-        else if (getRightStackSize() > 0)
-        {
-            int stackColour = Integer.parseInt(Colours.DUST_COLOURS[MathHelper.clamp_int(this.inventory[OUTPUT_RIGHT_INVENTORY_INDEX].getItemDamage(), 0, Colours.DUST_COLOURS.length - 1)], 16);
-            return ColourUtils.convertIntColourToByteArray(stackColour);
-        }
-        else
-        {
-            return new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        }
+        return 0;
     }
 
     private void sendDustPileData()
     {
-        byte[] blendedColours = getBlendedColour();
-        this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID, 2, getLeftStackSize() + getRightStackSize());
-        this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID, 3, blendedColours[0]);
-        this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID, 4, blendedColours[1]);
-        this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType().blockID, 5, blendedColours[2]);
+        if (this.getBlockType() != null)
+        {
+            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType(), 2, getLeftStackSize());
+            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType(), 3, getLeftStackMeta());
+            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType(), 4, getRightStackSize());
+            this.worldObj.addBlockEvent(this.xCoord, this.yCoord, this.zCoord, this.getBlockType(), 5, getRightStackMeta());
+        }
+    }
+
+    /**
+     * Returns an array containing the indices of the slots that can be accessed by automation on the given side of this
+     * block.
+     *
+     * @param side
+     */
+    @Override
+    public int[] getAccessibleSlotsFromSide(int side)
+    {
+        return side == ForgeDirection.DOWN.ordinal() ? new int[]{FUEL_INVENTORY_INDEX, OUTPUT_LEFT_INVENTORY_INDEX, OUTPUT_RIGHT_INVENTORY_INDEX} : new int[]{INPUT_INVENTORY_INDEX, OUTPUT_LEFT_INVENTORY_INDEX, OUTPUT_RIGHT_INVENTORY_INDEX};
+    }
+
+    @Override
+    public boolean canInsertItem(int slotIndex, ItemStack itemStack, int side)
+    {
+        return isItemValidForSlot(slotIndex, itemStack);
+    }
+
+    @Override
+    public boolean canExtractItem(int slotIndex, ItemStack itemStack, int side)
+    {
+        return slotIndex == OUTPUT_LEFT_INVENTORY_INDEX || slotIndex == OUTPUT_RIGHT_INVENTORY_INDEX;
     }
 }

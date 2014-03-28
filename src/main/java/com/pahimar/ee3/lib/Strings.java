@@ -27,6 +27,7 @@ public class Strings
 
     // Tooltip related localiation keys
     public static final String TOOLTIP_INFUSED_WITH = "tooltip.ee3:infusedPrefix";
+    public static final String UPGRADES_CHESTS = "tooltip.ee3:upgradesPrefix";
 
     /* NBT related constants */
     public static final String NBT_ITEM_CHARGE_LEVEL_KEY = "itemChargeLevel";
@@ -34,10 +35,12 @@ public class Strings
     public static final String NBT_ITEM_CRAFTING_GUI_OPEN = "itemCraftingGuiOpen";
     public static final String NBT_ITEM_TRANSMUTATION_GUI_OPEN = "itemTransmutationGuiOpen";
     public static final String NBT_ITEM_ALCHEMICAL_BAG_GUI_OPEN = "itemAlchemicalBagGuiOpen";
+    public static final String NBT_ITEM_UUID_MOST_SIG = "itemUUIDMostSig";
+    public static final String NBT_ITEM_UUID_LEAST_SIG = "itemUUIDLeastSig";
     public static final String NBT_ITEM_DISPLAY = "display";
     public static final String NBT_ITEM_COLOR = "color";
     public static final String NBT_TE_STATE_KEY = "teState";
-    public static final String NBT_TE_CUSTOM_NAME = "CustomName";
+    public static final String NBT_CUSTOM_NAME = "CustomName";
     public static final String NBT_TE_DIRECTION_KEY = "teDirection";
 
     /* Block name constants */
@@ -67,6 +70,8 @@ public class Strings
     public static final String[] ALCHEMICAL_FUEL_SUBTYPE_NAMES = {ALCHEMICAL_COAL_NAME, MOBIUS_FUEL_NAME, AETERNALIS_FUEL_NAME};
     public static final String ALCHEMICAL_FUEL_NAME = "alchemicalFuel";
     public static final String ALCHEMICAL_FUEL_BLOCK_NAME = "alchemicalFuelBlock";
+    public static final String ALCHEMICAL_UPGRADE_NAME = "alchemicalUpgrade";
+    public static final String[] ALCHEMICAL_UPGRADE_SUBTYPE_NAMES = {"verdant", "azure", "minium"};
 
     /* Transmutation cost related constants */
     public static final String TRANSMUTATION_COST = "_cost";

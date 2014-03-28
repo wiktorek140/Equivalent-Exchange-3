@@ -3,7 +3,6 @@ package com.pahimar.ee3.proxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
 
 /**
  * Equivalent-Exchange-3
@@ -70,7 +69,7 @@ public class ServerProxy extends CommonProxy
         // NOOP
     }
 
-    public void handleTileCalcinatorPacket(int x, int y, int z, ForgeDirection orientation, byte state, String customName, int dustStackSize, byte dustRedChannel, byte dustGreenChannel, byte dustBlueChannel)
+    public void handleTileCalcinatorPacket(int x, int y, int z, ForgeDirection orientation, byte state, String customName, byte leftStackSize, byte leftStackMeta, byte rightStackSize, byte rightStackMeta)
     {
         // NOOP
     }

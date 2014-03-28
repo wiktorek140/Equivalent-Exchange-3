@@ -4,7 +4,6 @@ import com.pahimar.ee3.helper.VersionHelper;
 import com.pahimar.ee3.lib.Commands;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.util.ChatMessageComponent;
 
 /**
  * Equivalent-Exchange-3
@@ -35,12 +34,12 @@ public class CommandVersion
             }
             else
             {
-                throw new WrongUsageException(Commands.COMMAND_VERSION_USAGE, new Object[0]);
+                throw new WrongUsageException(Commands.COMMAND_VERSION_USAGE);
             }
         }
         else
         {
-            throw new WrongUsageException(Commands.COMMAND_VERSION_USAGE, new Object[0]);
+            throw new WrongUsageException(Commands.COMMAND_VERSION_USAGE);
         }
     }
 

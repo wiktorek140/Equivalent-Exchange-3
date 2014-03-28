@@ -4,21 +4,18 @@ import com.pahimar.ee3.lib.ItemIds;
 import com.pahimar.ee3.lib.Reference;
 import com.pahimar.ee3.lib.Strings;
 import cpw.mods.fml.common.FMLLog;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
-import java.util.logging.Level;
 
 public class ItemConfiguration
 {
-
-    private static Configuration itemConfiguration;
-
     private static final String CATEGORY_DURABILITY = "durability";
+    private static Configuration itemConfiguration;
 
     protected static void init(File configFile)
     {
-
         itemConfiguration = new Configuration(configFile);
 
         try
@@ -35,6 +32,7 @@ public class ItemConfiguration
             ItemIds.CHALK = itemConfiguration.getItem(Strings.CHALK_NAME, ItemIds.CHALK_DEFAULT).getInt(ItemIds.CHALK_DEFAULT);
             ItemIds.DIVINING_ROD = itemConfiguration.getItem(Strings.DIVINING_ROD_NAME, ItemIds.DIVINING_ROD_DEFAULT).getInt(ItemIds.DIVINING_ROD_DEFAULT);
             ItemIds.ALCHEMICAL_FUEL = itemConfiguration.getItem(Strings.ALCHEMICAL_FUEL_NAME, ItemIds.ALCHEMICAL_FUEL_DEFAULT).getInt(ItemIds.ALCHEMICAL_FUEL_DEFAULT);
+            ItemIds.ALCHEMICAL_UPGRADE = itemConfiguration.getItem(Strings.ALCHEMICAL_UPGRADE_NAME, ItemIds.ALCHEMICAL_UPGRADE_DEFAULT).getInt(ItemIds.ALCHEMICAL_UPGRADE_DEFAULT);
 
             /* Item durability configs */
             ConfigurationSettings.MINIUM_STONE_MAX_DURABILITY = itemConfiguration.get(CATEGORY_DURABILITY, ConfigurationSettings.MINIUM_STONE_MAX_DURABILITY_CONFIGNAME, ConfigurationSettings.MINIUM_STONE_MAX_DURABILITY_DEFAULT).getInt(ConfigurationSettings.MINIUM_STONE_MAX_DURABILITY_DEFAULT);
@@ -42,7 +40,7 @@ public class ItemConfiguration
         }
         catch (Exception e)
         {
-            FMLLog.log(Level.SEVERE, e, Reference.MOD_NAME + " has had a problem loading its item configuration");
+            FMLLog.log(Level.ERROR, e, Reference.MOD_NAME + " has had a problem loading its item configuration");
         }
         finally
         {

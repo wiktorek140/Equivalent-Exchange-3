@@ -50,7 +50,7 @@ public class GuiAlchemicalChest extends GuiContainer
     {
         if (tileAlchemicalChest.getState() == 0 || tileAlchemicalChest.getState() == 1)
         {
-            fontRenderer.drawString(tileAlchemicalChest.isInvNameLocalized() ? tileAlchemicalChest.getInvName() : StatCollector.translateToLocal(tileAlchemicalChest.getInvName()), 8, 6, 4210752);
+            fontRenderer.drawString(tileAlchemicalChest.isInvNameLocalized() ? tileAlchemicalChest.getInventoryname() : StatCollector.translateToLocal(tileAlchemicalChest.getInventoryname()), 8, 6, 4210752);
             fontRenderer.drawString(StatCollector.translateToLocal(Strings.CONTAINER_INVENTORY), 35, ySize - 95 + 2, 4210752);
         }
     }
@@ -62,15 +62,15 @@ public class GuiAlchemicalChest extends GuiContainer
 
         if (tileAlchemicalChest.getState() == 0)
         {
-            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_STORAGE_SMALL);
+            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_CHEST_SMALL);
         }
         else if (tileAlchemicalChest.getState() == 1)
         {
-            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_STORAGE_MEDIUM);
+            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_CHEST_MEDIUM);
         }
         else if (tileAlchemicalChest.getState() == 2)
         {
-            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_STORAGE_LARGE);
+            this.mc.getTextureManager().bindTexture(Textures.GUI_ALCHEMICAL_CHEST_LARGE);
         }
 
         int xStart = (width - xSize) / 2;

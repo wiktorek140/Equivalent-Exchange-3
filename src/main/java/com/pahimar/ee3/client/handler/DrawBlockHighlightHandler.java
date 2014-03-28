@@ -1,20 +1,15 @@
 package com.pahimar.ee3.client.handler;
 
-import com.pahimar.ee3.configuration.ConfigurationSettings;
-import com.pahimar.ee3.helper.TransmutationHelper;
 import com.pahimar.ee3.item.IChargeable;
-import com.pahimar.ee3.item.ITransmutationStone;
 import com.pahimar.ee3.lib.Textures;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -28,34 +23,87 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class DrawBlockHighlightHandler
 {
-
     private static int pulse = 0;
     private static boolean doInc = true;
 
-    @ForgeSubscribe
-    public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event)
+    public static void renderPulsingQuad(ResourceLocation texture, float maxTransparency)
     {
 
-        Minecraft minecraft = FMLClientHandler.instance().getClient();
+        float pulseTransparency = getPulseValue() * maxTransparency / 3000f;
 
-        if (event.currentItem != null)
+        FMLClientHandler.instance().getClient().renderEngine.bindTexture(texture);
+        Tessellator tessellator = Tessellator.instance;
+
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(1, 1, 1, pulseTransparency);
+
+        tessellator.startDrawingQuads();
+        tessellator.setColorRGBA_F(1, 1, 1, pulseTransparency);
+
+        tessellator.addVertexWithUV(-0.5D, 0.5D, 0F, 0, 1);
+        tessellator.addVertexWithUV(0.5D, 0.5D, 0F, 1, 1);
+        tessellator.addVertexWithUV(0.5D, -0.5D, 0F, 1, 0);
+        tessellator.addVertexWithUV(-0.5D, -0.5D, 0F, 0, 0);
+
+        tessellator.draw();
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+    }
+
+    private static int getPulseValue()
+    {
+
+        if (doInc)
         {
-            if (event.currentItem.getItem() instanceof ITransmutationStone)
-            {
-                if (event.target.typeOfHit == EnumMovingObjectType.TILE)
-                {
-                    TransmutationHelper.updateTargetBlock(event.player.worldObj, event.target.blockX, event.target.blockY, event.target.blockZ);
-
-                    if (Minecraft.isGuiEnabled() && minecraft.inGameHasFocus)
-                    {
-                        if (ConfigurationSettings.ENABLE_OVERLAY_WORLD_TRANSMUTATION)
-                        {
-                            drawInWorldTransmutationOverlay(event);
-                        }
-                    }
-                }
-            }
+            pulse += 8;
         }
+        else
+        {
+            pulse -= 8;
+        }
+
+        if (pulse == 3000)
+        {
+            doInc = false;
+        }
+
+        if (pulse == 0)
+        {
+            doInc = true;
+        }
+
+        return pulse;
+    }
+
+    @SubscribeEvent
+    public void onDrawBlockHighlightEvent(DrawBlockHighlightEvent event)
+    {
+        /**
+         *  Disabling this until transmutation is done, since it's useless at the moment
+
+         Minecraft minecraft = FMLClientHandler.instance().getClient();
+
+         if (event.currentItem != null)
+         {
+         if (event.currentItem.getItem() instanceof ITransmutationStone)
+         {
+         if (event.target.typeOfHit == EnumMovingObjectType.TILE)
+         {
+         TransmutationHelper.updateTargetBlock(event.player.worldObj, event.target.blockX, event.target.blockY, event.target.blockZ);
+
+         if (Minecraft.isGuiEnabled() && minecraft.inGameHasFocus)
+         {
+         if (ConfigurationSettings.ENABLE_OVERLAY_WORLD_TRANSMUTATION)
+         {
+         drawInWorldTransmutationOverlay(event);
+         }
+         }
+         }
+         }
+         }
+         */
     }
 
     public void drawInWorldTransmutationOverlay(DrawBlockHighlightEvent event)
@@ -161,56 +209,5 @@ public class DrawBlockHighlightHandler
 
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glDepthMask(true);
-    }
-
-    public static void renderPulsingQuad(ResourceLocation texture, float maxTransparency)
-    {
-
-        float pulseTransparency = getPulseValue() * maxTransparency / 3000f;
-
-        FMLClientHandler.instance().getClient().renderEngine.bindTexture(texture);
-        Tessellator tessellator = Tessellator.instance;
-
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(1, 1, 1, pulseTransparency);
-
-        tessellator.startDrawingQuads();
-        tessellator.setColorRGBA_F(1, 1, 1, pulseTransparency);
-
-        tessellator.addVertexWithUV(-0.5D, 0.5D, 0F, 0, 1);
-        tessellator.addVertexWithUV(0.5D, 0.5D, 0F, 1, 1);
-        tessellator.addVertexWithUV(0.5D, -0.5D, 0F, 1, 0);
-        tessellator.addVertexWithUV(-0.5D, -0.5D, 0F, 0, 0);
-
-        tessellator.draw();
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-    }
-
-    private static int getPulseValue()
-    {
-
-        if (doInc)
-        {
-            pulse += 8;
-        }
-        else
-        {
-            pulse -= 8;
-        }
-
-        if (pulse == 3000)
-        {
-            doInc = false;
-        }
-
-        if (pulse == 0)
-        {
-            doInc = true;
-        }
-
-        return pulse;
     }
 }
